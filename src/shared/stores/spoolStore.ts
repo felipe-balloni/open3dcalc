@@ -62,7 +62,8 @@ export const SPOOL_MATERIALS = [
   "Outro",
 ] as const;
 
-export type SpoolSortKey = "name" | "material" | "remaining" | "weight" | "dateAdded";
+export type SpoolSortKey =
+  "name" | "material" | "remaining" | "weight" | "dateAdded";
 export type SpoolSortDir = "asc" | "desc";
 
 export interface SpoolFilters {
@@ -111,7 +112,8 @@ export function filterSpools(
     if (status && s.status !== status) return false;
     if (material && s.material.toLowerCase() !== material) return false;
     if (q) {
-      const haystack = `${s.color} ${s.brand} ${s.material} ${s.notes}`.toLowerCase();
+      const haystack =
+        `${s.color} ${s.brand} ${s.material} ${s.notes}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -190,15 +192,117 @@ const migrateSpool = (s: Record<string, unknown>): FilamentSpool => ({
   tareGrams: typeof s.tareGrams === "number" ? s.tareGrams : undefined,
 });
 
+// Intentional starter inventory: new users see a working shelf immediately.
+// Missing, empty, or invalid storage returns these samples on reload as well;
+// changing that behavior would require an explicit product decision.
+const DEFAULT_SPOOLS: FilamentSpool[] = [
+  {
+    id: "spool-1",
+    brand: "Anycubic",
+    material: "TPU",
+    color: "Laranja",
+    colorHex: "#e8722a",
+    weightGrams: 90,
+    originalWeightGrams: 1000,
+    costPerKg: 180,
+    diameterMm: 1.75,
+    dateAdded: Date.now() - 5 * 86400000,
+    notes: "Quase no fim — repor antes do próximo lote de chaveiros.",
+    status: "in_stock",
+    purchaseStore: "Anycubic Store",
+    tareGrams: 127,
+  },
+  {
+    id: "spool-2",
+    brand: "Anycubic",
+    material: "Resina",
+    color: "Azul Translúcido",
+    colorHex: "#38bdf8",
+    weightGrams: 140,
+    originalWeightGrams: 1000,
+    costPerKg: 220,
+    diameterMm: 1.75,
+    dateAdded: Date.now() - 10 * 86400000,
+    notes: "Resina lavável em água — cura ao ar livre, sem IPA.",
+    status: "in_stock",
+    purchaseStore: "Anycubic Store",
+    tareGrams: 127,
+  },
+  {
+    id: "spool-3",
+    brand: "Prusa",
+    material: "PETG",
+    color: "Branco",
+    colorHex: "#f8fafc",
+    weightGrams: 650,
+    originalWeightGrams: 1000,
+    costPerKg: 149,
+    diameterMm: 1.75,
+    dateAdded: Date.now() - 15 * 86400000,
+    notes: "Excelente para peças mecânicas e suportes.",
+    status: "in_stock",
+    purchaseStore: "Prusa Research",
+    tareGrams: 200,
+  },
+  {
+    id: "spool-4",
+    brand: "Polymaker",
+    material: "ABS",
+    color: "Cinza",
+    colorHex: "#94a3b8",
+    weightGrams: 950,
+    originalWeightGrams: 1000,
+    costPerKg: 130,
+    diameterMm: 1.75,
+    dateAdded: Date.now() - 20 * 86400000,
+    notes: "Carretel de papelão — imprimir com câmara fechada.",
+    status: "in_stock",
+    purchaseStore: "Polymaker Store",
+    tareGrams: 140,
+  },
+  {
+    id: "spool-5",
+    brand: "Bambu Lab",
+    material: "SILK",
+    color: "Dourado",
+    colorHex: "#eab308",
+    weightGrams: 1000,
+    originalWeightGrams: 1000,
+    costPerKg: 150,
+    diameterMm: 1.75,
+    dateAdded: Date.now() - 2 * 86400000,
+    notes: "Lote novo, acabamento com brilho sedoso.",
+    status: "in_stock",
+    purchaseStore: "Shopee",
+    tareGrams: 210,
+  },
+  {
+    id: "spool-6",
+    brand: "eSun",
+    material: "PLA",
+    color: "Preto",
+    colorHex: "#1e293b",
+    weightGrams: 720,
+    originalWeightGrams: 1000,
+    costPerKg: 110,
+    diameterMm: 1.75,
+    dateAdded: Date.now() - 25 * 86400000,
+    notes: "PLA+ de alta resistência para protótipos rápidos.",
+    status: "in_stock",
+    purchaseStore: "Amazon",
+    tareGrams: 220,
+  },
+];
+
 const loadSpools = (): FilamentSpool[] => {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return DEFAULT_SPOOLS;
   try {
     const saved = guardedStorage.getItem(SPOOLS_KEY);
     const raw = saved ? JSON.parse(saved) : [];
-    if (!Array.isArray(raw)) return [];
+    if (!Array.isArray(raw) || raw.length === 0) return DEFAULT_SPOOLS;
     return (raw as Record<string, unknown>[]).map(migrateSpool);
   } catch {
-    return [];
+    return DEFAULT_SPOOLS;
   }
 };
 

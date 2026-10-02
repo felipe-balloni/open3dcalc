@@ -5,8 +5,8 @@ order: 17
 
 # Operacional & Software
 
-A seção **Operacional & Software** responde a: *que custos invisíveis esta peça
-carrega?* É onde moram as assinaturas de software, o modelo 3D que você
+A seção **Operacional & Software** responde a: _que custos invisíveis esta peça
+carrega?_ É onde moram as assinaturas de software, o modelo 3D que você
 comprou, as luvas e o álcool — coisas que não são filamento nem máquina, e que
 quase sempre ficam de fora do orçamento.
 

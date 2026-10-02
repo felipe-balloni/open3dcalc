@@ -18,10 +18,25 @@ or writing partial state.
 {
   "format": "open3dcalc-export",
   "version": "1.1",
-  "kdf": { "algorithm": "PBKDF2-SHA256", "iterations": 310000, "salt_hex": "<128-bit>" },
-  "cipher": { "algorithm": "AES-256-GCM", "iv_hex": "<96-bit>", "tag_bits": 128 },
-  "aad": { "format": "open3dcalc-export", "version": "1.1", "policy_version": "1.0" },
-  "integrity": { "algorithm": "SHA-256", "plaintext_digest_hex": "<digest of canonical plaintext>" },
+  "kdf": {
+    "algorithm": "PBKDF2-SHA256",
+    "iterations": 310000,
+    "salt_hex": "<128-bit>"
+  },
+  "cipher": {
+    "algorithm": "AES-256-GCM",
+    "iv_hex": "<96-bit>",
+    "tag_bits": 128
+  },
+  "aad": {
+    "format": "open3dcalc-export",
+    "version": "1.1",
+    "policy_version": "1.0"
+  },
+  "integrity": {
+    "algorithm": "SHA-256",
+    "plaintext_digest_hex": "<digest of canonical plaintext>"
+  },
   "limits": { "records": 50000, "bytes": 52428800 },
   "payload": { "ciphertext_base64": "..." }
 }
@@ -49,14 +64,14 @@ or writing partial state.
 
 ## 4. Algorithms (allowlist — no negotiation, no cipher agility)
 
-| Parameter | Allowed value | Notes |
-|-----------|---------------|-------|
-| Content encryption | `AES-256-GCM` | only; 128-bit tag |
-| Key derivation | `PBKDF2-SHA256` | only; iterations **exactly 310,000** (OWASP 2023 guidance for PBKDF2-SHA256); `1.0` envelopes at 100,000 remain importable (§8) |
-| Key length | 256 bits | fixed |
-| Salt | 16 bytes (128 bits) | random per envelope, hex-encoded |
-| IV/nonce | 12 bytes (96 bits) | random per envelope, hex-encoded; never reused with the same key |
-| Integrity | SHA-256 | over canonical plaintext |
+| Parameter          | Allowed value       | Notes                                                                                                                           |
+| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Content encryption | `AES-256-GCM`       | only; 128-bit tag                                                                                                               |
+| Key derivation     | `PBKDF2-SHA256`     | only; iterations **exactly 310,000** (OWASP 2023 guidance for PBKDF2-SHA256); `1.0` envelopes at 100,000 remain importable (§8) |
+| Key length         | 256 bits            | fixed                                                                                                                           |
+| Salt               | 16 bytes (128 bits) | random per envelope, hex-encoded                                                                                                |
+| IV/nonce           | 12 bytes (96 bits)  | random per envelope, hex-encoded; never reused with the same key                                                                |
+| Integrity          | SHA-256             | over canonical plaintext                                                                                                        |
 
 Any envelope specifying an algorithm, iteration count, salt size, or IV size outside this
 allowlist MUST be **rejected** at parse time. There is no "try it anyway" path. (Iteration
@@ -104,11 +119,11 @@ upgrade path: a future `version` bump may raise the floor; it may never lower it
 
 ## 8. Cross-version rules
 
-| Envelope version | Produced by | Import behavior |
-|------------------|-------------|-----------------|
-| `1.0` | current `dataSync.ts` | accepted; 100,000 PBKDF2 iterations honored for that envelope only; field set per the legacy bundle |
-| `1.1` | D1.1+ per this spec | accepted; full validation (§5) |
-| anything else | — | **rejected** |
+| Envelope version | Produced by           | Import behavior                                                                                     |
+| ---------------- | --------------------- | --------------------------------------------------------------------------------------------------- |
+| `1.0`            | current `dataSync.ts` | accepted; 100,000 PBKDF2 iterations honored for that envelope only; field set per the legacy bundle |
+| `1.1`            | D1.1+ per this spec   | accepted; full validation (§5)                                                                      |
+| anything else    | —                     | **rejected**                                                                                        |
 
 Export always produces `1.1`. Import never "upgrades" a `1.0` silently — it imports the
 legacy field set and, if the user then re-exports, produces `1.1`.

@@ -5,8 +5,8 @@ order: 14
 
 # Custos da Máquina
 
-A seção **Custos da Máquina** responde a: *quanto desta peça é o desgaste da
-impressora?* É a depreciação do equipamento: o preço que você pagou pela
+A seção **Custos da Máquina** responde a: _quanto desta peça é o desgaste da
+impressora?_ É a depreciação do equipamento: o preço que você pagou pela
 impressora, dividido pela vida útil dela, cobrado por hora de trabalho. É a
 seção que faz o preço de uma peça incluir, fatia por fatia, o dinheiro que você
 gastou para comprar a máquina.
@@ -146,5 +146,5 @@ Quatro erros na taxa horária, e todos eles fazem a peça sair mais barata do qu
    irresistível, mas uma Ender 3 dificilmente sobrevive 3.600 horas úteis sem
    a precisão degradar. 24 a 36 meses é o intervalo realista.
 4. **Contar horas de impressora ligada como horas imprimindo.** Aquecimento,
-  nivelamento e troca de filamento não imprimem nada. O campo é "horas por mês
-  imprimindo" — o tempo de chapa de fato se movendo.
+   nivelamento e troca de filamento não imprimem nada. O campo é "horas por mês
+   imprimindo" — o tempo de chapa de fato se movendo.

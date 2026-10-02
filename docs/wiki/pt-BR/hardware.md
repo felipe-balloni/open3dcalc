@@ -6,7 +6,7 @@ order: 13
 # Desgaste de Hardware
 
 A seção **Desgaste de Hardware** existe para responder a uma pergunta que quase
-todo iniciante ignora: *o que desta peça se gastou além do filamento?* O
+todo iniciante ignora: _o que desta peça se gastou além do filamento?_ O
 filamento é só a parte visível do consumo. A peça também passa pelo **bico**
 (desgastando a abertura), pela **mesa** (gastando adesivo ou a folha PEI) e, na
 resina, pela **tela LCD**, pelo **filme FEP** e pela **câmara de cura**.
@@ -17,8 +17,8 @@ apenas invisível.
 
 ## Por que este custo existe mesmo na peça única
 
-Existe um argumento clássico para ignorar esta seção: *"minha impressora já
-está paga, então a peça sai de graça"*. O problema é que o bico não está pago
+Existe um argumento clássico para ignorar esta seção: _"minha impressora já
+está paga, então a peça sai de graça"_. O problema é que o bico não está pago
 para sempre. Cada metro de filamento empurrado por um bico de 0,4 mm o alarga
 um pouquinho. Um bico de latão novo custa R$ 35 e dura cerca de 20 kg de PLA.
 Se a sua peça usa 180 g, ela consumiu 0,9% da vida útil desse bico — é R$ 0,32

@@ -47,23 +47,23 @@ tourId: calc-basico
 ---
 ```
 
-| Chave   | Tipo   | Obrigatório | Para quê serve                              |
-| ------- | ------ | ----------- | ------------------------------------------- |
-| `title` | string | **sim**     | Rótulo do artigo no índice da Wiki (nav)    |
-| `order` | number | **sim**     | Posição no índice; menor aparece primeiro   |
-| `tourId`| string | não         | Tour de tutorial que este artigo introduz   |
+| Chave    | Tipo   | Obrigatório | Para quê serve                            |
+| -------- | ------ | ----------- | ----------------------------------------- |
+| `title`  | string | **sim**     | Rótulo do artigo no índice da Wiki (nav)  |
+| `order`  | number | **sim**     | Posição no índice; menor aparece primeiro |
+| `tourId` | string | não         | Tour de tutorial que este artigo introduz |
 
 O parser (`src/shared/lib/wiki/markdownToHtml.ts`, função `parseFrontmatter`)
 é **fail-closed de propósito**: ele não é um parser de YAML genérico, e tudo o
 que sai do documento abaixo faz o **build falhar apontando a linha exata**:
 
 - chave desconhecida — `wiki frontmatter: line 3 uses unknown key "draft";
-  supported keys are title, order and tourId`;
+supported keys are title, order and tourId`;
 - linha sem `chave: valor` — `wiki frontmatter: line 4 is not a "key: value"
-  pair: ...`;
+pair: ...`;
 - valor vazio — `wiki frontmatter: line 2 has an empty value; ...`;
 - chave com formato inválido (ex.: começa com dígito) — `... has an invalid
-  key: ...`;
+key: ...`;
 - bloco de frontmatter ausente, `title` vazio ou `order` não numérico — a
   mensagem diz qual dos dois está faltando;
 - `tourId` presente mas vazio — deve ser uma string não-vazia ou omitido.
@@ -78,17 +78,17 @@ A pipeline é `remark-parse` → `remark-frontmatter` → `remark-rehype` →
 `rehype-slug` → `rehype-sanitize` → `rehype-stringify`. O que chega ao usuário
 é o resultado dessa sequência:
 
-| Sintaxe                | Suporte | Observação                                            |
-| ---------------------- | ------- | ----------------------------------------------------- |
-| Títulos ATX `#`–`###`  | ✅      | h1, h2 e h3 entram no **sumário** (TOC) lateral       |
-| Títulos `####` e além  | ⚠️      | Renderizam, mas **não entram no TOC**                 |
-| Listas ordenadas       | ✅      |                                                       |
-| Listas não-ordenadas   | ✅      |                                                       |
-| Blocos de código (```) | ✅      | Sem highlight de sintaxe (sem runtime, sem tema)     |
+| Sintaxe                | Suporte | Observação                                                                  |
+| ---------------------- | ------- | --------------------------------------------------------------------------- |
+| Títulos ATX `#`–`###`  | ✅      | h1, h2 e h3 entram no **sumário** (TOC) lateral                             |
+| Títulos `####` e além  | ⚠️      | Renderizam, mas **não entram no TOC**                                       |
+| Listas ordenadas       | ✅      |                                                                             |
+| Listas não-ordenadas   | ✅      |                                                                             |
+| Blocos de código (```) | ✅      | Sem highlight de sintaxe (sem runtime, sem tema)                            |
 | Links `[a](b)`         | ✅      | Sanitizados; âncoras internas no formato `#user-content-<id>` (veja abaixo) |
-| **Negrito**            | ✅      |                                                       |
-| `código inline`        | ✅      |                                                       |
-| HTML cru               | ❌      | Descartado pelo remark-rehype / rehype-sanitize       |
+| **Negrito**            | ✅      |                                                                             |
+| `código inline`        | ✅      |                                                                             |
+| HTML cru               | ❌      | Descartado pelo remark-rehype / rehype-sanitize                             |
 
 IDs estáveis para as âncoras vêm do `rehype-slug`, mas **não do nome do
 arquivo**: o id é derivado do **texto do título** pelo `github-slugger`
@@ -189,10 +189,10 @@ compila e o i18n o publica. Um arquivo fora de `docs/wiki/<locale>/` (como
 
 ## Gates que guardam este contrato
 
-| Teste                                                      | O que pega                                     |
-| ---------------------------------------------------------- | ---------------------------------------------- |
-| `src/shared/lib/wiki/__tests__/markdownWikiPlugin.test.ts` | Frontmatter inválido, formato do módulo        |
+| Teste                                                      | O que pega                                      |
+| ---------------------------------------------------------- | ----------------------------------------------- |
+| `src/shared/lib/wiki/__tests__/markdownWikiPlugin.test.ts` | Frontmatter inválido, formato do módulo         |
 | `src/shared/lib/wiki/__tests__/wikiArticles.test.ts`       | Glob real, paridade de slug/order entre locales |
-| `src/shared/lib/wiki/__tests__/loadWikiBundle.test.ts`     | Ordenação, fallback de locale, shape do bundle |
-| `src/shared/components/Wiki/__tests__/WikiPage.test.tsx`   | Skeleton → conteúdo, nav, TOC, troca de idioma |
-| `src/shared/i18n/__tests__/wikiGuideParity.test.ts`        | Chaves `guide.*` dos cards do drawer de guias  |
+| `src/shared/lib/wiki/__tests__/loadWikiBundle.test.ts`     | Ordenação, fallback de locale, shape do bundle  |
+| `src/shared/components/Wiki/__tests__/WikiPage.test.tsx`   | Skeleton → conteúdo, nav, TOC, troca de idioma  |
+| `src/shared/i18n/__tests__/wikiGuideParity.test.ts`        | Chaves `guide.*` dos cards do drawer de guias   |

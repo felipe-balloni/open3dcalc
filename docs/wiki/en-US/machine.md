@@ -5,8 +5,8 @@ order: 14
 
 # Machine Costs
 
-The **Machine Costs** section answers: *how much of this part is the printer's
-wear?* It is the equipment depreciation: the price you paid for the printer,
+The **Machine Costs** section answers: _how much of this part is the printer's
+wear?_ It is the equipment depreciation: the price you paid for the printer,
 divided by its useful life, charged per working hour. It is the section that
 makes a part's price include, slice by slice, the money you spent buying the
 machine.

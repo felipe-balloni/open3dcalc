@@ -5,7 +5,7 @@ order: 16
 
 # Mão de Obra
 
-A seção **Mão de Obra** responde a: *quanto vale o meu tempo nesta peça?* São
+A seção **Mão de Obra** responde a: _quanto vale o meu tempo nesta peça?_ São
 os minutos em que um ser humano está de fato trabalhando: preparando o arquivo,
 fatiando, configurando a impressora, descolando a peça, removendo suporte,
 lixando.

@@ -43,7 +43,7 @@ custo de falha (fixo) = valor da falha
 No modo **percentual**, a taxa é aplicada sobre o **custo de produção** — a
 soma de material, energia, máquina, hardware, mão de obra e operação, antes de
 embalagem e frete. O multiplicador de risco, quando existe, altera a taxa antes
- dela ser aplicada:
+dela ser aplicada:
 
 ```
 taxa ajustada     = valor da falha * multiplicador de risco
@@ -105,7 +105,7 @@ Quatro erros cercam esta seção, e todos eles fazem a perda sair do seu bolso, 
   competitivo — apenas transfere a perda do cliente para você. Quando a falha
   inevitavelmente acontece, saiu do seu lucro.
 - **Aplicar a taxa sobre o preço de venda.** A falha é proporcional ao custo de
-produção, não ao preço. Usar a base errada dobra o valor e infla o preço.
+  produção, não ao preço. Usar a base errada dobra o valor e infla o preço.
 - **Ignorar o multiplicador em prints grandes.** Uma peça de 30 horas não tem a
   mesma taxa de risco de uma de 30 minutos; o multiplicador existe justamente
   para esses casos.

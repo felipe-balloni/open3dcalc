@@ -1,247 +1,294 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Globe, BookOpen, DollarSign, Info, X } from "lucide-react";
+import {
+  Box,
+  Lightbulb,
+  Maximize2,
+  Minimize2,
+  MessageCircle,
+} from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-import { motion, AnimatePresence } from "framer-motion";
 import { useCalculatorStore } from "@/shared/stores/calculatorStore";
-import { useTutorialStore } from "@/shared/stores/tutorialStore";
 import { TutorialLauncher } from "@/shared/components/ui/TutorialLauncher";
-import { GuideDrawer } from "@/shared/components/GuideDrawer/GuideDrawer";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { ThemeToggle } from "./ThemeToggle";
-import { APP_VERSION } from "@/shared/version";
-import { DataSyncButton } from "@/shared/components/ui/DataSyncButton";
 import { BetaBadge } from "@/shared/components/BetaBadge/BetaBadge";
 import { DemoModeButton } from "@/shared/components/DemoMode/DemoModeButton";
-import { LayoutSwitcher } from "./LayoutSwitcher";
-import { ManageVisibilityButton } from "@/shared/components/AppShell/ManageVisibilityButton";
-import { FocusModeButton } from "@/shared/components/AppShell/FocusModeButton";
 import { ContextBreadcrumb } from "./ContextBreadcrumb";
-import { useNavigationPrefsStore } from "@/shared/stores/navigationPrefsStore";
 import { UtilityBar } from "@/shared/components/UtilityBar/UtilityBar";
 import { CurrencySelect } from "@/shared/components/UtilityBar/CurrencySelect";
 import { LanguageToggle } from "@/shared/components/UtilityBar/LanguageToggle";
+import { useNavigationPrefsStore } from "@/shared/stores/navigationPrefsStore";
+import { useLayoutStore } from "@/shared/stores/layoutStore";
+import { AIAssistantModal } from "@/shared/components/AIAssistant/AIAssistantModal";
+import {
+  CalculatorModeControl,
+  ModelPresetControl,
+} from "./CalculatorHeaderControls";
+
+const PRESET_MODELS = [
+  {
+    name: "Suporte Articulado Dobrável",
+    type: "tpu_95a",
+    costPerKg: 90,
+    weight: 55,
+    hours: 0,
+    minutes: 54,
+    power: 250,
+    kwh: 0.95,
+    extras: 2.2,
+    margin: 100,
+    hourlyRate: 25,
+  },
+  {
+    name: "Engrenagem Helicoidal Dupla",
+    type: "petg",
+    costPerKg: 149,
+    weight: 120,
+    hours: 2,
+    minutes: 15,
+    power: 280,
+    kwh: 0.95,
+    extras: 4.5,
+    margin: 80,
+    hourlyRate: 30,
+  },
+  {
+    name: "Gabinete Eletrônico Modular",
+    type: "abs",
+    costPerKg: 130,
+    weight: 85,
+    hours: 1,
+    minutes: 40,
+    power: 320,
+    kwh: 0.95,
+    extras: 6.0,
+    margin: 120,
+    hourlyRate: 28,
+  },
+  {
+    name: "Vaso Geométrico Voronoi",
+    type: "pla_silk",
+    costPerKg: 145,
+    weight: 210,
+    hours: 4,
+    minutes: 20,
+    power: 220,
+    kwh: 0.95,
+    extras: 1.5,
+    margin: 150,
+    hourlyRate: 25,
+  },
+];
+
+const PRESET_MODEL_NAMES = PRESET_MODELS.map((model) => model.name);
 
 export function Header() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { currency: currencySetting, setCurrency } = useCalculatorStore(
     useShallow((s) => ({ currency: s.currency, setCurrency: s.setCurrency })),
   );
-  const { symbol } = useCurrency();
-  // Single source of truth for the destination: NavigationProvider reads this
-  // same field into ActiveTabContext, so the breadcrumb and the nav can never
-  // disagree about where the user is.
+  const { format } = useCurrency();
   const activeTab = useNavigationPrefsStore((state) => state.activeTab);
-  const [showSettings, setShowSettings] = useState(false);
-  const toggleLanguage = () => {
-    const next = i18n.language === "pt-BR" ? "en-US" : "pt-BR";
-    i18n.changeLanguage(next);
+  const setActiveTab = useNavigationPrefsStore((state) => state.setActiveTab);
+  const { layoutMode, setLayoutMode } = useLayoutStore(
+    useShallow((s) => ({
+      layoutMode: s.layoutMode,
+      setLayoutMode: s.setLayoutMode,
+    })),
+  );
+  const calcStore = useCalculatorStore();
+
+  const [showCopilotModal, setShowCopilotModal] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenCopilot = () => setShowCopilotModal(true);
+    window.addEventListener("open-copilot-modal", handleOpenCopilot);
+    return () =>
+      window.removeEventListener("open-copilot-modal", handleOpenCopilot);
+  }, []);
+
+  const [selectedModel, setSelectedModel] = useState(
+    calcStore.productName || "Suporte Articulado Dobrável",
+  );
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setIsFullscreen(false);
+    }
+  };
+
+  const handleSelectModel = (name: string) => {
+    setSelectedModel(name);
+    const preset = PRESET_MODELS.find((m) => m.name === name);
+    if (!preset) return;
+
+    // The store exposes whole-slice setters, so each slice is written exactly
+    // once with the preset merged over the current state.
+    calcStore.setProductName(preset.name);
+    calcStore.setActiveTab("fdm");
+    calcStore.setFdmMaterial({
+      ...calcStore.fdmMaterial,
+      type: preset.type,
+      costPerKg: preset.costPerKg,
+      weightUsed: preset.weight,
+    });
+    calcStore.setFdmPrintParams({
+      ...calcStore.fdmPrintParams,
+      printTimeHours: preset.hours + preset.minutes / 60,
+      printerPowerWatts: preset.power,
+      energyCostPerKwh: preset.kwh,
+    });
+    calcStore.setFdmLabor({
+      ...calcStore.fdmLabor,
+      hourlyRate: preset.hourlyRate,
+    });
+    calcStore.setFdmSales({
+      ...calcStore.fdmSales,
+      // `packagingCost` lives in the sales slice; `extras` in the preset is the
+      // packaging figure, not a section-extras amount.
+      packagingCost: preset.extras,
+      profitMarginPercent: preset.margin,
+    });
+  };
+
+  const results = calcStore?.results;
+  const suggestedPriceFormatted = results
+    ? format(results.sellPrice)
+    : "R$ 42,27";
+  const costFormatted = results ? format(results.totalCost) : "R$ 18,18";
+
+  const generateWhatsAppMessage = () => {
+    // The store keeps print time as a single decimal-hours value.
+    const hours = calcStore?.fdmPrintParams?.printTimeHours ?? 0.75;
+    const totalMinutes = Math.round(hours * 60);
+    const wholeHours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const name = calcStore?.productName || "Peça 3D";
+    const text =
+      `*Orçamento - Open3DCalc Studio*\n` +
+      `Projeto: *${name}*\n` +
+      `Tempo estimado: ${wholeHours}h ${minutes}m\n` +
+      `Custo de Produção: ${costFormatted}\n` +
+      `*Valor Sugerido: ${suggestedPriceFormatted}*\n\n` +
+      `Proposta emitida via Open3DCalc.`;
+    return encodeURIComponent(text);
   };
 
   return (
     <>
-      <header
-        className="sticky top-0 z-30 border-b"
-        style={{
-          background: "var(--surface-raised)",
-          borderColor: "var(--border-subtle)",
-        }}
-      >
-        <div className="max-w-[1600px] 2xl:max-w-[1920px] mx-auto min-w-0 px-4 sm:px-6 lg:px-12 h-[68px] flex items-center justify-between gap-2 sm:gap-4">
-          {/* Logo — clickable on mobile to open settings */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="flex min-w-0 max-w-[248px] items-center gap-3 cursor-pointer sm:cursor-default text-left focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:outline-none rounded-xl"
-            aria-label={t("nav.settings")}
-          >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)",
-                boxShadow: "var(--shadow-md)",
-              }}
+      <header className="sticky top-0 z-30 border-b select-none transition-colors border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--text-primary)]">
+        {/* Compact brand/action row; the context sits in the utility row below. */}
+        <div className="max-w-[1600px] 2xl:max-w-[1920px] mx-auto min-w-0 px-4 sm:px-6 lg:px-12 h-[56px] min-h-[56px] flex items-center justify-between gap-2 sm:gap-4 text-xs">
+          {/* Brand */}
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Logo */}
+            <button
+              onClick={() => setActiveTab("calculator")}
+              className="flex items-center gap-2 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-lg group shrink-0 min-h-[44px]"
+              aria-label={t("app.title")}
             >
-              <Box
-                className="w-[22px] h-[22px] text-[var(--text-inverse)]"
-                strokeWidth={2}
-              />
-            </div>
-
-            <div className="min-w-0 leading-none">
-              <div className="flex items-center gap-2">
-                <span className="truncate text-[17px] sm:text-[19px] font-black tracking-tight gradient-text">
-                  {t("app.title")}
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-fill)] to-[var(--accent-hover)] flex items-center justify-center text-[var(--accent-fill-fg)] shadow-md shadow-[var(--accent)]/40">
+                <Box className="w-4 h-4" strokeWidth={2.5} />
+              </div>
+              <span className="font-extrabold text-[15px] sm:text-[16px] text-[var(--text-primary)] tracking-tight flex items-center gap-1.5">
+                {t("app.title")}
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--info-subtle)] text-[var(--info)] border border-[var(--info)]/60 font-bold">
+                  v2.5
                 </span>
                 <BetaBadge />
-              </div>
-              <p className="truncate text-[11px] sm:text-[12px] text-[var(--text-muted)] uppercase tracking-widest mt-0.5 hidden sm:block">
-                {t("app.subtitle")}
-              </p>
-            </div>
-          </button>
-
-          {/* Contextual breadcrumb — intermediate sibling, NOT inside the logo
-              button above: that button opens the settings sheet on mobile, so
-              nesting navigation inside it would make the trail a settings
-              control. Reads the active destination from the store that
-              NavigationProvider itself reads, so the value is the same one the
-              nav renders. */}
-          <ContextBreadcrumb tab={activeTab} />
+              </span>
+            </button>
+          </div>
 
           {/* Actions */}
-          <div className="flex shrink-0 items-center gap-2">
-            {/* Desktop-only actions */}
-            <div className="hidden sm:flex items-center gap-2">
-              <LayoutSwitcher />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Proposta WhatsApp button */}
+            {/* contrast-site: header-whatsapp-proposal-link */}
+            <a
+              href={`https://wa.me/?text=${generateWhatsAppMessage()}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--positive)]/60 text-[var(--positive)] bg-[var(--positive-subtle)] hover:bg-[var(--positive-fill)] hover:text-[var(--positive-fill-fg)] text-xs font-semibold transition-colors shadow-sm min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-canvas)]"
+              title="Gerar proposta rápida formatada para WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Proposta WhatsApp</span>
+            </a>
 
-              {/* Guide / help drawer (22 areas) */}
-              <GuideDrawer />
-
-              {/* Tours launcher */}
-              <TutorialLauncher />
-            </div>
-
-            {/* Demo mode entry — visible on all sizes (indicator replaces it
-                while active) */}
-            <DemoModeButton />
-
-            {/* Data sync — visible on all sizes */}
-            <DataSyncButton variant="icon" />
-          </div>
-        </div>
-
-        {/* ── Mobile Settings Bottom Sheet ── */}
-        <AnimatePresence>
-          {showSettings && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="fixed inset-0 z-50 bg-[var(--text-primary)]/40 sm:hidden"
-                onClick={() => setShowSettings(false)}
+            {/* Local assistant button */}
+            <button
+              type="button"
+              data-testid="copilot-btn"
+              onClick={() => setShowCopilotModal(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--accent)]/40 bg-[var(--accent-subtle)] hover:bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-semibold transition-colors min-h-[36px]"
+              title={t("copilot.openLocalTitle")}
+            >
+              <Lightbulb
+                className="w-3.5 h-3.5 text-[var(--warning)]"
                 aria-hidden="true"
               />
-              <motion.div
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 28, stiffness: 300 }}
-                className="fixed bottom-0 left-0 right-0 z-50 sm:hidden rounded-t-2xl"
-                style={{
-                  background: "var(--surface-raised)",
-                  borderTop: "1px solid var(--border-subtle)",
-                  boxShadow: "var(--shadow-lg)",
-                  paddingBottom:
-                    "calc(72px + env(safe-area-inset-bottom, 0px))",
-                }}
-              >
-                {/* Drag handle */}
-                <div className="flex justify-center pt-2 pb-1">
-                  <div
-                    className="w-10 h-1 rounded-full"
-                    style={{ background: "var(--border-subtle)" }}
-                  />
-                </div>
+              <span>{t("copilot.openLocalButton")}</span>
+            </button>
 
-                {/* Title */}
-                <div className="flex items-center justify-between px-4 pb-2">
-                  <span className="text-sm font-bold">{t("nav.settings")}</span>
-                  <button
-                    onClick={() => setShowSettings(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--surface-sunken)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:outline-none"
-                    aria-label={t("common.close")}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+            {/* Demo Mode Button */}
+            <DemoModeButton />
 
-                <div className="px-3 pb-4 space-y-0.5">
-                  <div className="px-1 py-2">
-                    <LayoutSwitcher
-                      showLabels
-                      className="w-full justify-between"
-                    />
-                  </div>
+            {/* Tutorial Launcher */}
+            <TutorialLauncher />
 
-                  {/* Tutorial */}
-                  <button
-                    onClick={() => {
-                      useTutorialStore.getState().startTutorial();
-                      setShowSettings(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[var(--text-primary)] hover:bg-[var(--surface-sunken)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:outline-none min-h-[48px]"
-                  >
-                    <BookOpen className="w-[18px] h-[18px] shrink-0 text-[var(--accent)]" />
-                    <span className="text-sm font-medium">
-                      {t("nav.tutorial")}
-                    </span>
-                  </button>
-
-                  {/* Guide drawer — same surface as the desktop Header button */}
-                  <GuideDrawer align="inline" />
-
-                  {/* Destination visibility (Phase 7o s3) */}
-                  <ManageVisibilityButton />
-
-                  {/* Focus Mode (Phase 7o s4) — transient, never persisted */}
-                  <FocusModeButton />
-
-                  {/* Currency — desktop selector handles changes; close the sheet here */}
-                  <button
-                    onClick={() => setShowSettings(false)}
-                    aria-label={t("settings.currency")}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[var(--text-primary)] hover:bg-[var(--surface-sunken)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:outline-none min-h-[48px]"
-                  >
-                    <DollarSign className="w-[18px] h-[18px] shrink-0 text-[var(--accent)]" />
-                    <span className="text-sm font-medium">
-                      {t("settings.currency")}
-                    </span>
-                    <span className="ml-auto shrink-0 whitespace-nowrap text-xs text-[var(--text-muted)] font-mono">
-                      {symbol} {currencySetting}
-                    </span>
-                  </button>
-
-                  {/* Language */}
-                  <button
-                    onClick={() => {
-                      toggleLanguage();
-                      setShowSettings(false);
-                    }}
-                    aria-label={t("nav.language")}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[var(--text-primary)] hover:bg-[var(--surface-sunken)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:outline-none min-h-[48px]"
-                  >
-                    <Globe className="w-[18px] h-[18px] shrink-0 text-[var(--accent)]" />
-                    <span className="text-sm font-medium">
-                      {t("nav.language")}
-                    </span>
-                    <span className="ml-auto text-xs text-[var(--text-muted)]">
-                      {i18n.language === "pt-BR" ? "PT-BR" : "EN-US"}
-                    </span>
-                  </button>
-
-                  {/* Version */}
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--text-muted)]">
-                    <Info className="w-[18px] h-[18px] shrink-0" />
-                    <span className="text-xs">Open3DCalc v{APP_VERSION}</span>
-                  </div>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+            {/* Fullscreen Toggle */}
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              aria-label="Alternar tela cheia"
+              title="Tela cheia"
+              className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[var(--border-default)] hover:bg-[var(--surface-sunken)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-3.5 h-3.5" />
+              ) : (
+                <Maximize2 className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </div>
+        </div>
       </header>
 
-      {/* In the flow, below the header — see UtilityBar.tsx. Currency first:
-          it is the widest of the three and the one whose `auto` marker is
-          widest, so it anchors the band's left edge on both shells. */}
+      {/* In the flow, below the header — see UtilityBar.tsx. Context and
+          calculator controls lead; shared locale utilities stay at the end. */}
       <UtilityBar>
+        <ContextBreadcrumb tab={activeTab} />
+        {activeTab === "calculator" && (
+          <CalculatorModeControl
+            layoutMode={layoutMode}
+            onChange={setLayoutMode}
+          />
+        )}
+        {activeTab === "calculator" && (
+          <ModelPresetControl
+            selectedModel={selectedModel}
+            modelNames={PRESET_MODEL_NAMES}
+            onSelect={handleSelectModel}
+          />
+        )}
         <CurrencySelect setting={currencySetting} onChange={setCurrency} />
         <LanguageToggle />
         <ThemeToggle />
       </UtilityBar>
+
+      {/* ── Local printing assistant modal ── */}
+      <AIAssistantModal
+        open={showCopilotModal}
+        onClose={() => setShowCopilotModal(false)}
+      />
     </>
   );
 }

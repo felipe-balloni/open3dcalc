@@ -19,7 +19,7 @@ In scope (this deliverable):
 - Normative specifications (SPEC-01 … SPEC-04)
 - Versioned JSON Schema for the data manifest + a synthetic fixture
 - Compliance matrix tracing every Themis finding (R1–R15) to a document and section
-- Contract test matrix for D1.1+ (tests are *specified* here, *implemented* in D1.1+)
+- Contract test matrix for D1.1+ (tests are _specified_ here, _implemented_ in D1.1+)
 - Owners and rollback runbook
 
 Out of scope (explicitly **blocked** until this deliverable is approved — see §5):
@@ -33,21 +33,37 @@ Out of scope (explicitly **blocked** until this deliverable is approved — see 
 The only files added by D1.0 live under `docs/privacy/`. This is enforced by the diff-check
 gate in §4 (finding R15).
 
+## Current beta runtime disclosure
+
+This section describes the current application behavior; it does not change the
+historical scope or normative status of D1.0. The in-app Copilot uses
+material-based local heuristics, locally assembled proposal templates, and
+numbers calculated by the app. It does not perform generative AI, call an AI
+provider, read or store an API key, or transfer project/calculator data or keys
+to an AI service. Any Copilot API key left in browser storage by an older beta
+is ignored by the current feature.
+
+This is not a claim that the entire application never uses the network. The
+web/PWA fetches application assets and updates from its hosting service; the
+desktop app checks GitHub Releases for updates; and opening a generated
+WhatsApp proposal link intentionally shares the proposal text with WhatsApp.
+Those operations are separate from the Copilot's local suggestions.
+
 ## 2. Document index
 
-| File | Purpose | Addresses |
-|------|---------|-----------|
-| `ADR-001-crypto-capability.md` | Cryptographic capability model per platform; zero plaintext path for PII | R3, R7 |
-| `ADR-002-pii-at-rest-legacy.md` | Default-deny PII at rest; legacy plaintext enters read-only quarantine | R3, R11 |
-| `ADR-003-export-vs-backup.md` | User logical export vs. engineering/diagnostic raw SQLite backup | R2, R13 |
-| `SPEC-01-manifest.schema.json` | Versioned JSON Schema of the per-key/surface/platform data manifest | R1, R8 |
-| `SPEC-01-manifest-fixture.json` | Synthetic fixture (no real PII) covering all edge cases | R1, R8 |
-| `SPEC-02-erasure.md` | Resumable erasure saga: state machine, per-store journal, crash/rollback semantics | R4, R9, R10 |
-| `SPEC-03-export-envelope.md` | Normative encrypted export envelope: canonicalization, algorithms, limits, atomic IO | R12 |
-| `SPEC-04-consent-receipt.md` | Consent receipt: canonicalization, anti-tamper, exact withdrawal effect | R5, R14 |
-| `COMPLIANCE-MATRIX.md` | Traceability of every finding R1–R15 → document/section → status | R1–R15 |
-| `TEST-MATRIX.md` | Mandatory contract tests for D1.1+ (real browser, real IPC/SQLite, crash, cross-version) | R6 |
-| `OWNERS-RUNBOOK.md` | DRI, per-contract owners, rollback runbook per D1.1+ slice | R6, R15 |
+| File                            | Purpose                                                                                  | Addresses   |
+| ------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
+| `ADR-001-crypto-capability.md`  | Cryptographic capability model per platform; zero plaintext path for PII                 | R3, R7      |
+| `ADR-002-pii-at-rest-legacy.md` | Default-deny PII at rest; legacy plaintext enters read-only quarantine                   | R3, R11     |
+| `ADR-003-export-vs-backup.md`   | User logical export vs. engineering/diagnostic raw SQLite backup                         | R2, R13     |
+| `SPEC-01-manifest.schema.json`  | Versioned JSON Schema of the per-key/surface/platform data manifest                      | R1, R8      |
+| `SPEC-01-manifest-fixture.json` | Synthetic fixture (no real PII) covering all edge cases                                  | R1, R8      |
+| `SPEC-02-erasure.md`            | Resumable erasure saga: state machine, per-store journal, crash/rollback semantics       | R4, R9, R10 |
+| `SPEC-03-export-envelope.md`    | Normative encrypted export envelope: canonicalization, algorithms, limits, atomic IO     | R12         |
+| `SPEC-04-consent-receipt.md`    | Consent receipt: canonicalization, anti-tamper, exact withdrawal effect                  | R5, R14     |
+| `COMPLIANCE-MATRIX.md`          | Traceability of every finding R1–R15 → document/section → status                         | R1–R15      |
+| `TEST-MATRIX.md`                | Mandatory contract tests for D1.1+ (real browser, real IPC/SQLite, crash, cross-version) | R6          |
+| `OWNERS-RUNBOOK.md`             | DRI, per-contract owners, rollback runbook per D1.1+ slice                               | R6, R15     |
 
 Reading order for reviewers: README → COMPLIANCE-MATRIX (map of findings) → ADRs → SPECs →
 TEST-MATRIX → OWNERS-RUNBOOK.
@@ -56,7 +72,7 @@ TEST-MATRIX → OWNERS-RUNBOOK.
 
 - **DRI (Hermes):** owns the correctness, internal consistency, and cross-references of this
   document set. Any contradiction between documents MUST be treated as a D1.0 defect and MUST block approval.
-- **Themis (gate):** reviewed this deliverable over 3 rounds. Themis approval of the *documents*
+- **Themis (gate):** reviewed this deliverable over 3 rounds. Themis approval of the _documents_
   is recorded via the compliance matrix; Themis remains the quality gate for every D1.1+ slice.
 - **User (final approver):** the only authority who can (a) accept these contracts as binding
   for D1.1+, and (b) unblock D1.1+/runtime/D5. Until the user approves, everything downstream
@@ -90,21 +106,21 @@ D1.0 is complete when **all** of the following are verifiably true:
 6. **No over-promising:** every document states that D1.0 is documentation-only; normative
    MUST/SHOULD clauses bind D1.1+ implementation, not the current runtime. Where current
    behavior deviates from the contract (e.g., today's user-facing `db:export`), the deviation
-   is documented as the *problem* the contract resolves, not as delivered behavior.
+   is documented as the _problem_ the contract resolves, not as delivered behavior.
 7. **ADR status:** every ADR terminates with `Status: Proposed (awaiting Themis gate + user
-   final approval)`.
+final approval)`.
 
 ## 5. Block declaration (binding until approval)
 
 > **D1.1+, all runtime work, and D5 are BLOCKED** until the user grants final approval of this
-> document set. Themis sanction (3 rounds, R1–R15 addressed) authorizes *production of the
-> documents*, not adoption of the contracts. No code, test, dependency, or workflow change
+> document set. Themis sanction (3 rounds, R1–R15 addressed) authorizes _production of the
+> documents_, not adoption of the contracts. No code, test, dependency, or workflow change
 > derived from these contracts MUST NOT land before approval. Upon approval, implementation follows
 > the slice plan in `OWNERS-RUNBOOK.md` §4 and the mandatory tests in `TEST-MATRIX.md`.
 
 ## 6. Current-state facts these contracts build on
 
-These facts were verified against the codebase at the D1.0 base commit and are the *inputs* the
+These facts were verified against the codebase at the D1.0 base commit and are the _inputs_ the
 contracts normatively govern (they are not claims that the contracts are already implemented):
 
 - **localStorage keys (web/PWA/desktop renderer):** `open3dcalc_consent_v1`,

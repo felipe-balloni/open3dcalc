@@ -5,7 +5,7 @@ order: 16
 
 # Labor
 
-The **Labor** section answers: *how much is my time worth on this part?* It is
+The **Labor** section answers: _how much is my time worth on this part?_ It is
 the minutes when a human being is actually working: preparing the file,
 slicing, setting up the printer, removing the part, breaking away supports,
 sanding.

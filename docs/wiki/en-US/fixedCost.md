@@ -5,8 +5,8 @@ order: 15
 
 # Fixed Costs
 
-The **Fixed Costs** section answers an uncomfortable question: *how much of the
-rent does this part pay?* Everything you spend per month even if the printer
+The **Fixed Costs** section answers an uncomfortable question: _how much of the
+rent does this part pay?_ Everything you spend per month even if the printer
 stays off — workshop rent, internet, baseline power, building fees, mandatory
 software. No single part uses these things alone, but every part needs them to
 exist.
@@ -17,7 +17,7 @@ hobby from a real business.
 
 ## Why prorate instead of ignoring
 
-The argument against this section is: *"I pay rent anyway"*. That is true, and
+The argument against this section is: _"I pay rent anyway"_. That is true, and
 exactly why it must be in the price. If no part pays the rent, then it is your
 salary — or your savings — covering the rent of the business. The customer
 walks away with a cheap part and you walk away paying for the space it was made

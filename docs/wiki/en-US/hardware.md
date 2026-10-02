@@ -6,7 +6,7 @@ order: 13
 # Hardware Wear
 
 The **Hardware Wear** section answers a question almost every beginner ignores:
-*what did this print consume besides filament?* Filament is only the visible
+_what did this print consume besides filament?_ Filament is only the visible
 part of the cost. The part also passes through the **nozzle** (wearing the
 bore), the **bed** (wearing the adhesive or the PEI sheet) and, on resin, the
 **LCD panel**, the **FEP film** and the **curing lamp**.
@@ -17,8 +17,8 @@ invisible.
 
 ## Why this cost exists even for a single print
 
-There is a classic excuse to skip this section: *"my printer is already paid
-for, so the part costs me nothing"*. The problem is that the nozzle is never
+There is a classic excuse to skip this section: _"my printer is already paid
+for, so the part costs me nothing"_. The problem is that the nozzle is never
 paid for forever. Every meter of filament pushed through a 0.4 mm nozzle
 enlarges it a tiny bit. A new brass nozzle costs about R$ 35 and lasts roughly
 20 kg of PLA. If your part uses 180 g, it consumed 0.9% of that nozzle's life —

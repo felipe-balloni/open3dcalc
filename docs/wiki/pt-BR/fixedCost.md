@@ -5,8 +5,8 @@ order: 15
 
 # Custos Fixos
 
-A seção **Custos Fixos** responde a uma pergunta incômoda: *o que esta peça
-paga do aluguel?* Tudo que você gasta por mês mesmo que a impressora fique
+A seção **Custos Fixos** responde a uma pergunta incômoda: _o que esta peça
+paga do aluguel?_ Tudo que você gasta por mês mesmo que a impressora fique
 desligada — aluguel da oficina, internet, energia da base, condomínio, taxa de
 software obrigatório. Nenhuma peça usa essas coisas sozinha, mas todas precisam
 delas para existir.
@@ -17,7 +17,7 @@ verdade.
 
 ## Por que ratear e não ignorar
 
-O argumento contra esta seção é: *"o aluguel eu pago de qualquer jeito"*. É
+O argumento contra esta seção é: _"o aluguel eu pago de qualquer jeito"_. É
 verdade, e é exatamente por isso que ele precisa estar no preço. Se nenhuma
 peça paga o aluguel, então é o seu salário — ou a sua poupança — que está
 cobrindo o aluguel do negócio. O cliente sai com uma peça barata e você sai

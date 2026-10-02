@@ -12,11 +12,11 @@ Open3DCalc currently has two data-egress paths that are conflated:
 1. **`dataSync.ts` export bundle** — a client-side, optionally-encrypted JSON bundle
    (`open3dcalc-export`, version `1.0`) with a defined field set (settings, history,
    customers, quotes, catalog, filaments, products, theme, dashboard, sections). This is a
-   *logical* export: it is structured, versioned, filterable, and can exclude data by
+   _logical_ export: it is structured, versioned, filterable, and can exclude data by
    policy.
 2. **`db:export` (Electron IPC)** — a raw file copy of the SQLite database (after
    `wal_checkpoint(TRUNCATE)`), exposed through a user-facing save dialog
-   ("Exportar Banco de Dados"). This is a *physical* backup: it contains every table,
+   ("Exportar Banco de Dados"). This is a _physical_ backup: it contains every table,
    every column, every PII field, WAL internals, and any legacy plaintext — with no
    filtering, no redaction, and no envelope.
 
@@ -68,10 +68,10 @@ From D1.1+ onward, `db:export` (or its successor) is **not** a user feature:
 
 ### 2.3 Classification table
 
-| Artifact | Classification | Audience | PII handling | Transport | Retention |
-|----------|---------------|----------|--------------|-----------|-----------|
-| SPEC-03 export envelope | User logical export | End user | Encrypted inside envelope; quarantine excluded | User-mediated file transfer only | User-controlled |
-| Raw SQLite copy (`db:export`) | Engineering/diagnostic backup | Authorized operators (dev flag) | PII-bearing unless redacted | **Never** uploaded/synced; local file only | ≤14 days unredacted (secure disposal logged); longer only if redaction verified |
+| Artifact                      | Classification                | Audience                        | PII handling                                   | Transport                                  | Retention                                                                       |
+| ----------------------------- | ----------------------------- | ------------------------------- | ---------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| SPEC-03 export envelope       | User logical export           | End user                        | Encrypted inside envelope; quarantine excluded | User-mediated file transfer only           | User-controlled                                                                 |
+| Raw SQLite copy (`db:export`) | Engineering/diagnostic backup | Authorized operators (dev flag) | PII-bearing unless redacted                    | **Never** uploaded/synced; local file only | ≤14 days unredacted (secure disposal logged); longer only if redaction verified |
 
 ## 3. Consequences
 

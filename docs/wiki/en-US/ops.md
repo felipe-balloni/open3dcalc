@@ -5,8 +5,8 @@ order: 17
 
 # Operational & Software
 
-The **Operational & Software** section answers: *what invisible costs does this
-part carry?* This is where software subscriptions, the 3D model you bought, the
+The **Operational & Software** section answers: _what invisible costs does this
+part carry?_ This is where software subscriptions, the 3D model you bought, the
 gloves and the alcohol live — things that are neither filament nor machine, and
 that almost always stay out of the quote.
 

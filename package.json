@@ -5,6 +5,8 @@
   "main": "electron/dist/electron/main.js",
   "type": "module",
   "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "vite build",
     "dev:desktop": "concurrently -n vite,electron \"vite --config vite.desktop.config.ts\" \"npm run dev:electron\"",
     "dev:web": "vite --config vite.web.config.ts",
     "dev:electron": "tsc -p electron/tsconfig.json && node scripts/verify-electron-imports.mjs && cross-env NODE_ENV=development electron .",
@@ -15,7 +17,7 @@
     "build:all": "npm run build:desktop && npm run build:web",
     "preview:web": "vite preview --config vite.web.config.ts",
     "test": "vitest",
-    "test:run": "vitest run",
+    "test:run": "vitest run --maxWorkers=4",
     "test:browser": "vitest run --config vitest.browser.config.ts",
     "test:packaged": "node scripts/packaged-probe.mjs",
     "release:notes:validate": "node scripts/validate-release-notes.mjs",
@@ -25,8 +27,6 @@
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx db/migrate.ts",
-    "postinstall": "node -e \"if (!process.env.CI) require('child_process').execSync('electron-rebuild -f -w better-sqlite3', { stdio: 'inherit' })\"",
-    "prepare": "husky",
     "diagnostic:retention": "node scripts/diagnostic-retention.mjs"
   },
   "dependencies": {
@@ -39,7 +39,9 @@
     "@react-pdf/renderer": "^4.9.0",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
+    "@types/canvas-confetti": "^1.9.0",
     "better-sqlite3": "^13.0.3",
+    "canvas-confetti": "^1.9.4",
     "drizzle-orm": "^0.45.2",
     "electron-updater": "^6.8.9",
     "framer-motion": "^13.4.0",
